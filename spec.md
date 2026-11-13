@@ -318,7 +318,7 @@ sequenceDiagram
 | *"Nếu người bán thấy kết luận của AI sai, họ có quyền gì?"* | Nút "Từ chối đề xuất & Yêu cầu Trọng tài sàn" một chạm, tải video đóng gói niêm phong, hạn 24h, tiền tiếp tục đóng băng, hồ sơ chuyển `chuyen_truong_nhom`. |
 | *"Lỗi nguy hiểm nhất là gì?"* | K2: AI so với mô tả hiện tại thay vì mô tả lúc đặt → gọi `tu_choi_khieu_nai` → tiền về shop, người mua mất tiền, không đảo lại được. Lỗi ngữ cảnh, sửa snapshot dữ liệu và rào chắn gọi tool, không sửa câu chữ (§3.6). |
 
-#### C. Phần việc của Thành viên 3 — Prototype Lead & User Flow (§5 Prototype · §7 Demo ca lạ)
+#### C. Phần việc của Thành viên 3 — Phạm Quốc Huy (§5 Prototype · §7 Demo ca lạ)
 
 | Câu hỏi | Trả lời |
 | :--- | :--- |
