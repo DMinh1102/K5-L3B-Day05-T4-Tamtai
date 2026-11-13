@@ -5,7 +5,7 @@
 | Họ và Tên | Mã Học Viên | Việc đã làm |
 | :--- | :--- | :--- |
 | Vũ Văn Trường | 2A202603910 | Viết 8 kịch bản rủi ro và chọn 2 kịch bản đắt nhất (§2); thiết kế UX khi AI sai, câu thoại nguyên văn, ba đường đi, nguyên tắc HAX/PAIR, phân loại lỗi và lỗi không cứu được bằng câu chữ (§3); ba tiêu chí Pass/Fail (§6); ca lạ và phần vấn đáp khi demo (§7) |
-|  |  | Lát cắt, ba việc không làm (§1); ma trận mức tự chủ, mức cho từng tool, rào chắn an toàn (§4) |
+| Đặng Đức Minh | 2A202603886 | Lát cắt, ba việc không làm (§1); ma trận mức tự chủ, mức cho từng tool, rào chắn an toàn (§4) |
 |  |  | User flow ba bên (§5); dựng prototype tương tác, ảnh đánh số, điều phối demo (§5, §7) |
 
 ---
@@ -22,9 +22,11 @@ Sai hướng nào thì một bên chịu: hoàn sai thì người bán mất ti�
 
 **Ba việc tính năng KHÔNG làm:**
 
-1. **Không xử lý tranh chấp hàng giả / hàng nhái.** Giám định cần tem chống giả quang học, chất liệu vật lý hoặc xác minh từ chủ nhãn hiệu; AI thị giác qua camera điện thoại không đảm bảo tính pháp lý, nên luồng này thuộc bộ phận chuyên trách.
-2. **Không tự động khấu trừ tiền ngoài ví ký quỹ của chính đơn hàng đó.** Mọi hoàn tiền chỉ thao tác trên số tiền đang tạm giữ của đơn đó, để không can thiệp vào dòng tiền ngoài đơn.
-3. **Không duyệt hoàn tiền không cần trả hàng cho đơn trên 200.000 VNĐ.** AI hoàn tiền lớn mà người mua giữ luôn hàng thì người bán mất cả hàng lẫn doanh thu; đơn trên 200.000 VNĐ bắt buộc trả hàng về kho hoặc có chuyên viên phê duyệt.
+| STT | Việc hệ thống TUYỆT ĐỐI KHÔNG LÀM | Lập luận kinh doanh & Rủi ro pháp lý (Lý do cốt lõi) | Cơ chế xử lý thay thế |
+| :---: | :--- | :--- | :--- |
+| **1** | **Không xử lý tranh chấp hàng giả / hàng nhái.** | Giám định hàng nhái tinh vi đòi hỏi tem chống giả phản quang, chất liệu vật lý thực tế hoặc xác minh từ chủ nhãn hiệu. AI thị giác qua camera điện thoại không đảm bảo tính pháp lý; phán sai dẫn đến nguy cơ kiện tụng thương hiệu và bồi thường lớn. | Tách riêng luồng khiếu nại "Nghi ngờ hàng giả" $\rightarrow$ Chuyển thẳng Hội đồng Giám định Pháp lý của Sàn với quy trình kiểm định vật lý chuyên biệt. |
+| **2** | **Không tự động khấu trừ tiền ngoài ví ký quỹ của chính đơn hàng đó.** | Can thiệp dòng tiền ngoài đơn hàng vi phạm thỏa thuận dịch vụ trung gian thanh toán và quy định ngân hàng. Mọi thao tác hoàn tiền chỉ được phép thực hiện trên số tiền tạm giữ trong Ví ký quỹ (Escrow) của chính đơn hàng đó. | Nếu ví ký quỹ không đủ số dư, chuyển ca sang bộ phận Thu hồi nợ & Trọng tài pháp lý, không tự ý trừ thẻ/tài khoản ngân hàng của shop. |
+| **3** | **Không duyệt hoàn tiền không cần trả hàng (Refund-only) cho đơn trên 200.000 VNĐ.** | Tránh rủi ro trục lợi chính sách (Friendly Fraud / Refund Abuse). Nếu AI tự động hoàn tiền lớn mà người mua giữ luôn hàng, người bán mất cả hàng lẫn doanh thu; kẻ gian sẽ khai thác lỗ hổng để "mua hàng 0 đồng". | Đơn trên 200.000 VNĐ bắt buộc chọn 1 trong 2: (1) Yêu cầu trả hàng về kho shop kiểm tra rồi mới hoàn tiền, hoặc (2) Chuyên viên con người thẩm định trước khi giải ngân. |
 
 ---
 
@@ -143,20 +145,88 @@ Thiết kế cứu nó bằng ba thay đổi:
 
 ## §4. Mức tự chủ *(chặng 4)*
 
-| Cấp độ | Định nghĩa | Điều kiện kích hoạt | Quyền hạn tài chính |
-| :--- | :--- | :--- | :--- |
-| **L1 · Suggestion** | AI chỉ trích xuất, tóm tắt, hiện ảnh so khớp cho nhân viên sàn | Đơn > 500.000 VNĐ, hoặc một bên có tiền sử tranh chấp / gian lận | Không có quyền giao dịch nào |
-| **L2 · Drafting** (mặc định) | AI soạn bản kết luận và phương án xử lý; chuyên viên một cú bấm duyệt | 200.000 – 500.000 VNĐ, confidence 75–91% | Chỉ giải ngân sau khi chuyên viên bấm `[Phê duyệt]` |
-| **L3 · Conditional Autonomy** | AI tự ra phán quyết và giải ngân ngay | Đơn ≤ 200.000 VNĐ và confidence ≥ 92% và cả hai bên có Trust Score cao | Tự hoàn từ quỹ ký quỹ; shop có 48h khiếu nại hậu kiểm |
-| **L4 · High Autonomy** | Hoàn toàn tự động ngầm | Không áp dụng | Bị vô hiệu hoá bởi rào chắn hệ thống |
+### 4.1. Mức tự chủ cho từng tool & Cost-of-error *(R4: 13đ)*
 
-Ngưỡng tin cậy: ≥ 92% → L3; 75–91% → L2 dự thảo; < 75% → L1 buộc bổ sung dữ liệu hoặc chuyển thủ công. Độ trễ phản hồi AI ≤ 3,5 giây; quá 5 giây thì hiện màn hình chờ và xử lý ngầm. Khi AI quá tải hoặc timeout, hệ thống chuyển hàng đợi thủ công, giữ nguyên tiền ký quỹ và thông báo: *"Hồ sơ đã chuyển thẳng tới Chuyên viên. Phản hồi dự kiến trong 12 giờ làm việc. Tiền đơn hàng được đảm bảo giữ nguyên."*
+| Tool | Đảo được không | Mức tự chủ | Sai thì ai chịu gì · đảo được không · chờ người mất gì |
+| :--- | :--- | :---: | :--- |
+| `yeu_cau_bang_chung` | Tin đã gửi tới | **Tự làm** | Sai $\rightarrow$ người dùng nhận 1 câu hỏi thừa, tự bỏ qua được. Chờ người duyệt từng câu $\rightarrow$ rơi vào vòng lặp K3, tốn thêm 24h. Làm sai rẻ hơn bắt người dùng chờ. |
+| `chuyen_truong_nhom` | Hoàn toàn được | **Tự làm** | Sai $\rightarrow$ chuyên viên đọc thêm 1 hồ sơ, gỡ được ngay. Chờ $\rightarrow$ K2 và K7 không bị chặn kịp thời. |
+| `soan_hoan_tien` | **Khó** (tiền đã chuyển) | **Cần người duyệt** (L2); Tự làm chỉ ở L3 ($\le 200\text{k}$ & $\ge 92\%$) | Sai $\rightarrow$ người bán mất tiền **và** mất hàng, không lấy lại được (K7). 1 cú `[Phê duyệt]` của chuyên viên chặn được. **Ai duyệt:** chuyên viên sàn. **Thấy gì:** 2 cột so khớp + confidence + đề xuất. **Quá hạn 24h:** tự `chuyen_truong_nhom`, không tự giải ngân. |
+| `tu_choi_khieu_nai` | **Khó** | **Cần người duyệt**; **CẤM** khi mô tả hiện tại $\ne$ mô tả lúc đặt | Sai $\rightarrow$ người mua mất tiền, giữ hàng sai (K2). Được bảo vệ bởi rào chắn §3.6. |
+| `phat_shop` | Khó, ảnh hưởng uy tín lâu dài | **CẤM** | Không thuộc thẩm quyền luồng chat thông thường (§1, K5); 1 bước xác nhận thông thường không đủ để phạt. Prototype **không có nút** gọi tool này. |
+
+* **Phương án đã cân nhắc và loại bỏ:**
+  * Đã cân nhắc cho `phat_shop` ở mức "Cần người duyệt": Loại vì trừ điểm uy tín (sao quả tạ) ảnh hưởng đến toàn bộ doanh thu shop dài hạn, luồng khiếu nại thông thường không được phép kích hoạt chế tài này.
+  * Đã cân nhắc cho `soan_hoan_tien` "Tự làm" cho mọi đơn hàng: Loại vì ở K7 tiền chuyển về ví người mua sẽ không bao giờ lấy lại được, gây thiệt hại không thể đảo ngược cho người bán.
+
+### 4.2. Tool khó xếp nhất: `soan_hoan_tien` *(R4: 5đ)*
+* **Xung đột giữa hai luồng quan điểm:**
+  * *Luồng muốn giữ "Tự làm":* Viện dẫn K2 — bắt người mua chờ chuyên viên duyệt khiến họ chịu thêm 12h bức xúc trong khi tiền bị đóng băng, dù shop đã thừa nhận gửi nhầm.
+  * *Luồng muốn giữ "Cần người duyệt":* Viện dẫn K7 — nếu AI tự tin (96%) nhưng thực chất người bán đúng mà khách đòi hoàn tiền vô lý, AI tự hoàn tiền sẽ khiến người bán mất cả tiền lẫn hàng vĩnh viễn (không đảo ngược được).
+* **Quyết định chốt:** Phân tách có điều kiện: **Tự làm (L3)** chỉ áp dụng cho đơn nhỏ $\le 200.000\text{ VNĐ}$ + Confidence $\ge 92\%$ kèm cơ chế hoàn tác 48h; còn lại mặc định là **Cần người duyệt (L2)** dưới dạng bản dự thảo.
+* **Lý do lựa chọn:** 12h chờ đợi của K2 là chi phí người mua chịu được và giải thích được (tiền vẫn an toàn trong Escrow); còn việc mất trắng tài sản và sản phẩm của shop ở K7 là tổn thất không thể phục hồi.
+
+### 4.3. Luật bổ sung & Kỹ thuật Tách bước (Workflow Splitting) *(R4: Điểm cộng)*
+1. **Tách bước `soan_hoan_tien`:** Tách thành 2 hành động độc lập: **"Soạn đề xuất hoàn tiền"** (AI tự động làm ngay lập tức) + **"Giải ngân thực tế"** (Cần chuyên viên con người bấm duyệt) $\rightarrow$ **K7 bị chặn đứng hoàn toàn**, tiền không thể tự động thất thoát.
+2. **Luật Snapshot dữ liệu:** Quy tắc *"Nếu mô tả hiện tại $\ne$ mô tả lúc đặt $\rightarrow$ Vô hiệu hóa lập tức cả `soan_hoan_tien` và `tu_choi_khieu_nai`, ép chuyển `chuyen_truong_nhom`"* $\rightarrow$ **K2 bị triệt tiêu từ gốc**.
+
+### 4.4. Thử nghiệm mức tự chủ trên 3 ca cụ thể *(R4: 4đ)*
+
+| Ca thử nghiệm | Cái sai có bị chặn kịp thời? | Có việc nào AI tự làm khi lẽ ra phải hỏi? | Người dùng bình thường có bị chờ vô ích? |
+| :--- | :--- | :--- | :--- |
+| **K2** *(Mô tả bị shop sửa)* | **Có** — `tu_choi_khieu_nai` bị vô hiệu hóa $\rightarrow$ tự động gọi `chuyen_truong_nhom`. | Không | Chờ 12h có giải thích rõ lý do, tiền bảo toàn. |
+| **K7** *(Người bán đúng)* | **Có** — `soan_hoan_tien` chỉ dừng ở bản dự thảo L2, tiền không đi. | Không | Không chờ vô ích: nhận ngay phản hồi kèm cửa khiếu nại 1 chạm. |
+| **K1** *(Tin nhắn cụt)* | **Có** — AI hỏi đúng 1 câu mã vận đơn, chưa gọi tool tài chính. | Không | Không, chỉ 1 câu hỏi trọng tâm, không bắt điền form dài. |
+
+### 4.5. Lời hứa của sản phẩm thay đổi theo mức tự chủ *(R4: 3đ)*
+Khi chuyển `soan_hoan_tien` từ "Tự làm" sang "Cần người duyệt", lời hứa của sản phẩm thay đổi căn bản:
+* Thay vì hứa: *"AI tự động giải quyết đền bù cho bạn trong 3 giây"* (hứa tốc độ tối đa nhưng rủi ro sai sót cao).
+* Đổi thành: *"AI soạn sẵn phương án công bằng, chuyên viên sàn bấm xác nhận thì tiền mới đi"* (hứa tính an toàn và minh bạch).
+* *Giá trị mang lại:* Cùng một mô hình AI, nhưng việc thay đổi lời hứa giúp thiết lập đúng kỳ vọng của người dùng, đổi lại không có ca nào tiền bị chuyển nhầm bên mà con người không kịp can thiệp.
+
+### 4.6. Chốt bảng ngưỡng duy nhất & Rào chắn an toàn hệ thống (Guardrails)
+
+| Cấp độ | Tên gọi & Vai trò AI | Điều kiện kích hoạt duy nhất | Quyền hạn tài chính | Cơ chế kiểm soát con người |
+| :---: | :--- | :--- | :--- | :--- |
+| **L1** | **Suggestion**<br>*(Trợ lý tra cứu)* | - Confidence $< 75\%$, HOẶC<br>- Đơn hàng $> 500.000\text{ VNĐ}$, HOẶC<br>- Phát hiện mâu thuẫn mô tả (K2) | **Không có quyền giao dịch.** AI chỉ trích xuất thông tin, đo kích thước, so khớp 2 cột. | **Human-in-the-center:** Toàn quyền quyết định thuộc về Thẩm định viên sàn. |
+| **L2** | **Drafting**<br>*(Mặc định an toàn)* | - $200.000\text{ VNĐ} < \text{Đơn} \le 500.000\text{ VNĐ}$, HOẶC<br>- Confidence $75\% \le C < 92\%$ | **Không giải ngân tự động.** AI soạn bản dự thảo đề xuất giải pháp hòa giải. | **Human-in-the-loop:** Chuyên viên sàn bấm `[Phê duyệt]` trên Dashboard thì tiền mới giải ngân. |
+| **L3** | **Conditional Autonomy**<br>*(Tự động có điều kiện)* | - Đơn $\le 200.000\text{ VNĐ}$ **VÀ**<br>- Confidence $\ge 92\%$ **VÀ**<br>- Trust Score cả 2 bên cao | **Tự động giải ngân hoàn tiền** từ quỹ Escrow trong 3.5 giây. | **Human-on-the-loop:** Shop có **48 giờ** khiếu nại hậu kiểm. Nếu AI sai, Quỹ Bảo an sàn bù tiền ngay. |
+| **L4** | **High Autonomy** | **BỊ VÔ HIỆU HÓA HOÀN TOÀN** | **Bị cấm vĩnh viễn** | Tránh Cascade Failures khi mô hình drift hoặc bị tấn công gian lận. |
+
+* **Rào chắn kỹ thuật & SLA:**
+  * *Độ trễ phản hồi AI:* $\le 3.5\text{ giây}$. Nếu quá $5\text{ giây}$ tự động chuyển hàng đợi không đồng bộ.
+  * *Hạ cấp dịch vụ an toàn (Graceful Degradation):* Khi hệ thống AI quá tải hoặc timeout, tự động chuyển ticket vào hàng đợi chuyên viên, giữ nguyên tiền trong Escrow và gửi thông báo: *"Hồ sơ đã chuyển thẳng tới Chuyên viên. Phản hồi dự kiến trong 12 giờ làm việc. Tiền đơn hàng được đảm bảo giữ nguyên."*
+  * *Chống gian lận:* OCR đối chiếu mã vận đơn trên vỏ hộp với hệ thống; kiểm tra EXIF và phân tích mức nhiễu ảnh chống Photoshop; Rate-limiting khóa L3 với tài khoản khiếu nại quá 2 lần/tháng; Global Circuit Breaker tự ngắt L3 về L2 nếu tỷ lệ khiếu nại đảo ngược vượt quá $5\%$/giờ.
 
 ---
 
 ## §5. Prototype *(chặng 5)*
 
-Prototype là một file HTML tĩnh mở trực tiếp bằng trình duyệt, kèm 1–2 ảnh có đánh số. Không đăng nhập, không backend, không thanh toán thật; toàn bộ dữ liệu là dữ liệu dựng (đơn hàng, ảnh, mô tả lúc đặt 12/11, mô tả hiện tại 13/11). Không có lời gọi AI thật — độ tin cậy và bản đối chiếu được dựng sẵn để bấm thử.
+### 5.1. Thông tin kỹ thuật & Công cụ dựng
+* **Vị trí file:** `prototype/index.html` (kèm tài liệu hướng dẫn `prototype/README.md`). Mở trực tiếp bằng bất kỳ trình duyệt web nào (Chrome, Edge, Safari).
+* **Công cụ:** HTML5 thuần, Tailwind CSS qua CDN, Vanilla JavaScript. Không đăng nhập, không backend, không thanh toán thật; toàn bộ dữ liệu là dữ liệu dựng chuẩn theo fixture của Track 4 (đơn hàng #SPX98234120, mô tả lúc đặt 12/11, mô tả hiện tại 13/11).
+* **Khả năng tương tác:** Bấm chuyển đổi được cả 4 kịch bản (**K2**, **K7**, **K1**, và **L3 Fast Track**) từ đầu tới cuối, hiển thị $\ge 2$ mức tự chủ khác nhau. Có đầy đủ 3 góc nhìn (Người mua, Người bán với hạn 24h, và Trọng tài sàn Admin).
+* **Khắc phục tiêu chí TC3 (§6.2):** Header luôn hiển thị rõ dòng: *"Hạn yêu cầu trả hàng: còn 14 ngày / 15 ngày"* (lấy từ chính sách 15 ngày của Shopee trong tài liệu track).
+
+### 5.2. Bản đồ 5 số đánh dấu trên Prototype (Phục vụ vấn đáp HAX / PAIR)
+
+| Số | Chỗ trên màn hình Prototype | Thể hiện gì | Nguyên tắc thiết kế | Mức tự chủ |
+| :---: | :--- | :--- | :--- | :---: |
+| **(1)** | Khung 2 cột: `Mô tả lúc đặt · 12/11 · size L` ↔ `Mô tả hiện tại · 13/11 · size M` (K2); `ảnh người mua \| ảnh lúc đặt` (K7) | Căn cứ AI dựa vào, có mốc ngày tháng để người dùng và chuyên viên tự kiểm tra | **G11** + PAIR Explainability | L1 / L2 |
+| **(2)** | Thanh đo Confidence: `68% — dưới ngưỡng 92%` (K2) / `96% — chưa phải phán quyết cuối` (K7) + dòng *"Hệ thống chỉ đọc mô tả và ảnh, không kiểm tra được chất liệu vải"* | Giúp người dùng biết AI chắc chắn tới đâu **và** AI không làm được gì | **G2** + PAIR Explainability & Trust | L1 / L2 |
+| **(3)** | Ô hỏi lại đúng 1 câu mã vận đơn ở K1; và **sự vắng mặt** hoàn toàn của nút "Xác nhận hoàn tiền" ở K2 | Không đoán mò khi thiếu dữ liệu; dừng hẳn khi căn cứ sai | **G10** (Thu hẹp phạm vi khi nghi ngờ) | L1 |
+| **(4)** | Nhãn **"Trợ lý Sàn · hỗ trợ"** ở đầu mọi tin nhắn AI (cả 3 góc nhìn) | Người dùng luôn nhận biết mình đang tương tác với AI (Tuân thủ Điều 11.1 Luật Trí tuệ nhân tạo 134/2025/QH15) | **G1** (Minh bạch AI) | Mọi mức |
+| **(5)** | Cụm 3 nút: `[📸 Bổ sung ảnh tem size]` · `[⚖️ Yêu cầu Trọng tài sàn]` · `[🕒 Hoàn tác 48h]`; **hoàn toàn không có nút** `phat_shop` | Giúp người dùng sửa sai hoặc gạt bỏ đề xuất dễ dàng; mỗi lỗi một đường lui; việc cấm không có nút | **G8/G9** + PAIR Errors & Graceful Failure | L1/L2/L3 + **CẤM** |
+
+### 5.3. Quyết định cách thể hiện giao diện (Rationale) *(R5: 4đ)*
+
+| Quyết định UI | Cách khác đã cân nhắc | Phương án chọn | Lý do loại bỏ phương án kia |
+| :--- | :--- | :--- | :--- |
+| **Hiện độ tin cậy** | Chỉ hiện con số % đơn thuần / hoặc ẩn hẳn đi | Hiện cả % + ngưỡng 92% + dòng cảnh báo *"không làm được gì"* | 96% đứng một mình không nói lên được "chưa phải phán quyết cuối"; còn nếu ẩn đi thì người dùng mù mờ không biết AI chắc chắn tới đâu. |
+| **Hiện căn cứ đối chiếu** | Chỉ hiện ảnh người mua gửi / hoặc bảng 2 cột không có ngày | 2 cột đối chiếu có gắn kèm mốc thời gian snapshot (12/11 vs 13/11) | Bảng 2 cột không có ngày chính là nguồn cơn gây ra lỗi K2 (§3.6) vì không phân biệt được bản sửa đổi. |
+| **Điều khiển mức tự chủ** | Dùng 1 nút gạt toggle tổng: "AI tự động Bật/Tắt" | Hiển thị nhãn Badge mức tự chủ riêng + nút hành động tương ứng từng tool | Nút toggle tổng không phản ánh được quyền hạn của 5 tool khác nhau, và không có chỗ để thể hiện "việc bị cấm thì không có nút". |
+
+### 5.4. Sơ đồ User Flow 3 bên (Sequence Diagram)
 
 ```mermaid
 sequenceDiagram
