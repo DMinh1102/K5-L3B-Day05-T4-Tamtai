@@ -6,7 +6,7 @@
 | :--- | :--- | :--- |
 | Vũ Văn Trường | 2A202603910 | Viết 8 kịch bản rủi ro và chọn 2 kịch bản đắt nhất (§2); thiết kế UX khi AI sai, câu thoại nguyên văn, ba đường đi, nguyên tắc HAX/PAIR, phân loại lỗi và lỗi không cứu được bằng câu chữ (§3); ba tiêu chí Pass/Fail (§6); ca lạ và phần vấn đáp khi demo (§7) |
 | Đặng Đức Minh | 2A202603886 | Lát cắt, ba việc không làm (§1); ma trận mức tự chủ, mức cho từng tool, rào chắn an toàn (§4) |
-|  |  | User flow ba bên (§5); dựng prototype tương tác, ảnh đánh số, điều phối demo (§5, §7) |
+| Phạm Quốc Huy | 2A202603897 | User flow ba bên (§5); dựng prototype tương tác, ảnh đánh số, điều phối demo (§5, §7) |
 
 ---
 
@@ -203,20 +203,26 @@ Khi chuyển `soan_hoan_tien` từ "Tự làm" sang "Cần người duyệt", l�
 ## §5. Prototype *(chặng 5)*
 
 ### 5.1. Thông tin kỹ thuật & Công cụ dựng
-* **Vị trí file:** `prototype/index.html` (kèm tài liệu hướng dẫn `prototype/README.md`). Mở trực tiếp bằng bất kỳ trình duyệt web nào (Chrome, Edge, Safari).
-* **Công cụ:** HTML5 thuần, Tailwind CSS qua CDN, Vanilla JavaScript. Không đăng nhập, không backend, không thanh toán thật; toàn bộ dữ liệu là dữ liệu dựng chuẩn theo fixture của Track 4 (đơn hàng #SPX98234120, mô tả lúc đặt 12/11, mô tả hiện tại 13/11).
-* **Khả năng tương tác:** Bấm chuyển đổi được cả 4 kịch bản (**K2**, **K7**, **K1**, và **L3 Fast Track**) từ đầu tới cuối, hiển thị $\ge 2$ mức tự chủ khác nhau. Có đầy đủ 3 góc nhìn (Người mua, Người bán với hạn 24h, và Trọng tài sàn Admin).
-* **Khắc phục tiêu chí TC3 (§6.2):** Header luôn hiển thị rõ dòng: *"Hạn yêu cầu trả hàng: còn 14 ngày / 15 ngày"* (lấy từ chính sách 15 ngày của Shopee trong tài liệu track).
+* **Vị trí file:** `prototype/index.html` (log gọi AI thật `prototype/ai-call-log.json`, và 2 ảnh chụp màn hình đánh số `prototype/preview-k2.png`, `prototype/preview-cala.png`). Mở trực tiếp bằng bất kỳ trình duyệt web nào (Chrome, Edge, Safari).
+* **Công cụ:** HTML5 thuần, CSS3 & Vanilla JavaScript độc lập (1 file duy nhất, không phụ thuộc CDN ngoài). Không đăng nhập, không backend; toàn bộ dữ liệu mock bám sát fixture của Track 4 (đơn hàng `#SPX98234120`, mô tả lúc đặt 12/11, mô tả hiện tại 13/11).
+* **Lời gọi AI thật (Bonus +3đ):** Tích hợp trực tiếp modal **"⚡ Bonus (+3đ): Gọi AI thật đối chiếu Snapshot"** gọi model `gemini-2.5-flash` để đối chiếu khiếu nại với `snapshot_at_order_12_11` và `current_listing_13_11`.
+* **Khả năng tương tác:** Bấm chuyển đổi trực tiếp 5 kịch bản (**K2**, **K7**, **K1**, **L3 Fast-Track**, và **Ca lạ Demo §7.1**) từ đầu tới cuối, hiển thị rõ 3 mức tự chủ (**L1**, **L2**, **L3** + trạng thái **CẤM**). Chuyển đổi tức thời giữa **3 góc nhìn** (`📱 Người mua`, `🏪 Người bán với đồng hồ đếm ngược 24:00:00`, và `⚖️ Trọng tài sàn Admin duyệt 1 chạm`).
+* **Khắc phục triệt để tiêu chí TC3 (§6.2):** Banner đơn hàng ở đầu mọi màn hình luôn hiển thị đồng thời **"Mô tả lúc đặt (Snapshot): 12/11/2026"** và **"Hạn yêu cầu trả hàng: còn 14 ngày / 15 ngày"** (lấy từ chính sách 15 ngày của Shopee trong tài liệu track).
 
-### 5.2. Bản đồ 5 số đánh dấu trên Prototype (Phục vụ vấn đáp HAX / PAIR)
+### 5.2. Bản đồ 5 số đánh dấu trên Prototype & Ảnh minh hoạ (HAX / PAIR)
 
-| Số | Chỗ trên màn hình Prototype | Thể hiện gì | Nguyên tắc thiết kế | Mức tự chủ |
+* **Ảnh 1 — Đánh số `(1)–(5)` ở K2 (Mô tả bị sửa — L1 · Góc nhìn Trọng tài sàn Admin duyệt 1 chạm):** `prototype/preview-k2.png`
+  ![Prototype K2 - Góc nhìn Trọng tài sàn (Admin Dashboard)](prototype/preview-k2.png)
+* **Ảnh 2 — Đánh số `(1)–(5)` ở Ca lạ Demo §7.1 (Ảnh tem rõ nhưng thiếu mã đơn + shop sửa mô tả — L1 · Góc nhìn Người mua):** `prototype/preview-cala.png`
+  ![Prototype Ca lạ §7.1 - Góc nhìn Người mua](prototype/preview-cala.png)
+
+| Số | Chỗ trên màn hình Prototype (`preview-k2.png` & `preview-cala.png`) | Thể hiện gì | Nguyên tắc thiết kế | Mức tự chủ |
 | :---: | :--- | :--- | :--- | :---: |
-| **(1)** | Khung 2 cột: `Mô tả lúc đặt · 12/11 · size L` ↔ `Mô tả hiện tại · 13/11 · size M` (K2); `ảnh người mua \| ảnh lúc đặt` (K7) | Căn cứ AI dựa vào, có mốc ngày tháng để người dùng và chuyên viên tự kiểm tra | **G11** + PAIR Explainability | L1 / L2 |
-| **(2)** | Thanh đo Confidence: `68% — dưới ngưỡng 92%` (K2) / `96% — chưa phải phán quyết cuối` (K7) + dòng *"Hệ thống chỉ đọc mô tả và ảnh, không kiểm tra được chất liệu vải"* | Giúp người dùng biết AI chắc chắn tới đâu **và** AI không làm được gì | **G2** + PAIR Explainability & Trust | L1 / L2 |
-| **(3)** | Ô hỏi lại đúng 1 câu mã vận đơn ở K1; và **sự vắng mặt** hoàn toàn của nút "Xác nhận hoàn tiền" ở K2 | Không đoán mò khi thiếu dữ liệu; dừng hẳn khi căn cứ sai | **G10** (Thu hẹp phạm vi khi nghi ngờ) | L1 |
-| **(4)** | Nhãn **"Trợ lý Sàn · hỗ trợ"** ở đầu mọi tin nhắn AI (cả 3 góc nhìn) | Người dùng luôn nhận biết mình đang tương tác với AI (Tuân thủ Điều 11.1 Luật Trí tuệ nhân tạo 134/2025/QH15) | **G1** (Minh bạch AI) | Mọi mức |
-| **(5)** | Cụm 3 nút: `[📸 Bổ sung ảnh tem size]` · `[⚖️ Yêu cầu Trọng tài sàn]` · `[🕒 Hoàn tác 48h]`; **hoàn toàn không có nút** `phat_shop` | Giúp người dùng sửa sai hoặc gạt bỏ đề xuất dễ dàng; mỗi lỗi một đường lui; việc cấm không có nút | **G8/G9** + PAIR Errors & Graceful Failure | L1/L2/L3 + **CẤM** |
+| **(1)** | Khung 2 cột đối chiếu có mốc ngày: `Mô tả lúc đặt · 12/11 · Size L` ↔ `Mô tả hiện tại · 13/11 · Size M (Shop đã sửa)` (K2); và `Ảnh người mua gửi (Tem Size M rõ, thiếu mã đơn)` ↔ `Luật §7.1 & §3.6 (Hỏi mã đơn + Khoá từ chối)` (Ca lạ) | Căn cứ AI dựa vào, có mốc ngày tháng Snapshot để người mua, người bán và chuyên viên tự kiểm tra | **G11** + PAIR Explainability | L1 / L2 |
+| **(2)** | Khung độ tin cậy cam: `Độ tin cậy 52% — Ảnh tem rõ nhưng thiếu mã đơn nối tới Snapshot` (Ca lạ) / `68% — dưới ngưỡng 92%` (K2) / `96% — chưa phải phán quyết cuối` (K7) + dòng *"Hệ thống chỉ đọc mô tả và ảnh, không kiểm tra được chất liệu vải hay tem vật lý"* | Giúp người dùng biết AI chắc chắn tới đâu **và** giới hạn kỹ thuật mà AI không làm được | **G2** + PAIR Explainability & Trust | L1 / L2 |
+| **(3)** | Khung cảnh báo đỏ: `Rào chắn kép: Hỏi 1 câu mã vận đơn (K1) + Vô hiệu hoá tu_choi_khieu_nai (K2)` ở Ca lạ; và **sự vắng mặt** hoàn toàn của nút tự xác nhận hoàn tiền ở K2 | Không đoán mò khi thiếu mã đơn; dừng hẳn và khoá tool tài chính khi căn cứ mô tả bị sửa | **G10** (Thu hẹp phạm vi khi nghi ngờ) | L1 |
+| **(4)** | Nhãn **`Trợ lý Sàn · hỗ trợ`** (Góc nhìn Người mua) / **`Bản dự thảo trình Chuyên viên sàn`** (Góc nhìn Trọng tài sàn) kèm Badge mức tự chủ (`L1 · Cần người duyệt` / `L1 · Cấm đối chiếu khi thiếu mã đơn`) ở đầu tin nhắn | Người dùng và chuyên viên luôn nhận biết phần nào do AI tạo ra và đang ở mức tự chủ nào (Tuân thủ Điều 11.1 Luật Trí tuệ nhân tạo 134/2025/QH15) | **G1** (Minh bạch AI) | Mọi mức |
+| **(5)** | Cụm nút hành động theo vai trò: `[📦 Gửi mã vận đơn #SPX98234120]` · `[🙋 Gặp nhân viên]` (Người mua ở Ca lạ) và `[✅ Phê duyệt Hoàn tiền]` · `[❌ Bác bỏ Khiếu nại (Bảo vệ Shop)]` (Trọng tài sàn ở K2); **hoàn toàn không có nút** `phat_shop` | Giúp người dùng bổ sung đúng chỗ thiếu hoặc gặp người thật 1 chạm; chuyên viên duyệt 1 chạm (Tách bước §4.3); việc cấm không có nút | **G8/G9** + PAIR Errors & Graceful Failure | L1/L2/L3 + **CẤM** |
 
 ### 5.3. Quyết định cách thể hiện giao diện (Rationale) *(R5: 4đ)*
 
@@ -293,12 +299,30 @@ sequenceDiagram
 
 **Nhóm đổi ý gì sau ca đó.** Bổ sung luật *"không có mã đơn thì không được đối chiếu, kể cả khi ảnh rất rõ"* vào §4. Ca lạ cho thấy ảnh rõ dễ làm AI lẫn người xem tưởng đã đủ căn cứ, trong khi thứ còn thiếu lại chính là khoá nối tới snapshot mô tả lúc đặt.
 
-### 7.2. Vấn đáp cá nhân — phần việc của Vũ Văn Trường
+### 7.2. Vấn đáp cá nhân — chuẩn bị cho cả 3 thành viên
+
+#### A. Phần việc của Thành viên 1 — Đặng Đức Minh (§1 Lát cắt & 3 việc không làm · §4 Mức tự chủ)
 
 | Câu hỏi | Trả lời |
 | :--- | :--- |
-| *"Chỉ cho tôi chỗ nào trên màn hình là G__."* | G11 → hai cột đối chiếu có mốc ngày; G2 → thanh độ tin cậy kèm dòng giới hạn; G10 → ô hỏi đúng một câu và sự vắng mặt của nút xác nhận hoàn tiền; G1 → nhãn "Trợ lý Sàn · hỗ trợ"; G8/G9 → cụm nút sửa bằng chứng, khiếu nại một chạm, hoàn tác 48h, theo §3.5. |
+| *"Hành động này sai thì ai mất gì, vì vậy nó ở mức nào?"* | `soan_hoan_tien` sai → người bán mất cả tiền lẫn hàng, không lấy lại được (K7) → mặc định **Cần người duyệt (L2)** (tách thành *Soạn dự thảo* + *Chuyên viên bấm giải ngân*); chỉ **Tự làm (L3)** với đơn $\le 200\text{k}$ và Confidence $\ge 92\%$ kèm hoàn tác 48h. `tu_choi_khieu_nai` sai → người mua mất tiền và giữ hàng lỗi (K2) → **Cần người duyệt**, và **CẤM** khi mô tả hiện tại $\ne$ mô tả lúc đặt. `phat_shop` → **CẤM** hoàn toàn trong luồng chat. |
+| *"Vì sao nhóm chọn 3 việc KHÔNG làm ở §1?"* | (1) Không xử lý hàng giả/nhái vì camera điện thoại không đủ tính pháp lý giám định sở hữu trí tuệ; (2) Không khấu trừ tiền ngoài ví ký quỹ (Escrow) của chính đơn hàng đó; (3) Không duyệt hoàn tiền giữ hàng (Refund-only) cho đơn $> 200.000\text{ VNĐ}$ để chặn trục lợi mua hàng 0 đồng. |
+| *"Đổi một mức tự chủ thì lời hứa với người dùng đổi thế nào?"* | Khi chuyển `soan_hoan_tien` từ Tự làm sang Cần người duyệt (L2), lời hứa đổi từ *"AI giải quyết đền bù trong 3 giây"* sang *"AI soạn sẵn phương án công bằng, chuyên viên sàn bấm xác nhận thì tiền mới đi"* — đặt đúng kỳ vọng và triệt tiêu rủi ro mất tiền không đảo ngược (§4.5). |
+
+#### B. Phần việc của Thành viên 2 — Vũ Văn Trường (§2 Kịch bản · §3 UX khi AI sai · §6 Pass/Fail)
+
+| Câu hỏi | Trả lời |
+| :--- | :--- |
+| *"Chỉ cho tôi chỗ nào trên màn hình là G__."* | G11 → hai cột đối chiếu có mốc ngày `(1)`; G2 → thanh độ tin cậy kèm dòng giới hạn `(2)`; G10 → ô hỏi đúng một câu và sự vắng mặt của nút xác nhận hoàn tiền `(3)`; G1 → nhãn "Trợ lý Sàn · hỗ trợ" `(4)`; G8/G9 → cụm nút sửa bằng chứng, khiếu nại một chạm, hoàn tác 48h `(5)`, theo §3.5. |
 | *"Khi AI không chắc về ảnh, AI nói gì và giao diện xử lý thế nào?"* | Không từ chối ngay: nêu cụ thể còn thiếu tem phụ hay mã vận đơn, kèm gợi ý góc chụp, giữ hồ sơ 24h không đóng khiếu nại, tiền vẫn trong ví ký quỹ (§3.4, loại lỗi người dùng, K3). |
 | *"Nếu người bán thấy kết luận của AI sai, họ có quyền gì?"* | Nút "Từ chối đề xuất & Yêu cầu Trọng tài sàn" một chạm, tải video đóng gói niêm phong, hạn 24h, tiền tiếp tục đóng băng, hồ sơ chuyển `chuyen_truong_nhom`. |
 | *"Lỗi nguy hiểm nhất là gì?"* | K2: AI so với mô tả hiện tại thay vì mô tả lúc đặt → gọi `tu_choi_khieu_nai` → tiền về shop, người mua mất tiền, không đảo lại được. Lỗi ngữ cảnh, sửa snapshot dữ liệu và rào chắn gọi tool, không sửa câu chữ (§3.6). |
-| *"Hành động này sai thì ai mất gì, vì vậy nó ở mức nào?"* | `soan_hoan_tien` sai → người bán mất tiền và hàng → cần người duyệt (L2); chỉ tự làm ở L3 ≤ 200k và ≥ 92%, kèm hoàn tác 48h. |
+
+#### C. Phần việc của Thành viên 3 — Prototype Lead & User Flow (§5 Prototype · §7 Demo ca lạ)
+
+| Câu hỏi | Trả lời |
+| :--- | :--- |
+| *"Bấm vào đâu trên Prototype để thấy rõ nhất thiết kế ở §3–§4 và 5 số HAX/PAIR?"* | Trên thanh điều khiển trên cùng của `prototype/index.html`, bấm chuyển giữa **K2 (L1)**, **K7 (L2)**, **K1 (L1)**, **Đơn $\le 200\text{k}$ (L3)** và **Ca lạ (§7.1)**, kết hợp 3 tab góc nhìn (`📱 Người mua`, `🏪 Người bán hạn 24h`, `⚖️ Trọng tài sàn Admin`). Các huy hiệu cam `(1)–(5)` trên giao diện trỏ trực tiếp vào G11, G2, G10, G1 và G8/G9. |
+| *"Mỗi mức tự chủ ở §4 trông thế nào trên màn hình? Việc cấm thì người dùng thấy gì?"* | **L1 (K2, K1):** Khoá hẳn nút hoàn tiền/từ chối tự động, tự kích hoạt `chuyen_truong_nhom` hoặc hỏi đúng 1 câu xin mã vận đơn. **L2 (K7):** Hiện nhãn *"Bản dự thảo, chưa ai duyệt"*, chỉ bên tab **Trọng tài sàn (Admin)** mới có nút `[✅ Phê duyệt]` / `[❌ Bác bỏ]`. **L3 ($\le 200\text{k}$):** Tự giải ngân từ Escrow kèm nút `[🕒 Hoàn tác trong 48h]`. **Việc cấm (`phat_shop`):** Hoàn toàn không có nút nào trên giao diện ở cả 3 góc nhìn. |
+| *"Khi gặp ca lạ ở buổi demo (ảnh tem rõ nhưng thiếu mã đơn + shop sửa mô tả), prototype xử lý thế nào?"* | Bấm nút **`🟣 Ca lạ Demo (§7.1)`** trên prototype: hệ thống áp dụng rào chắn kép — (1) không có mã vận đơn thì tuyệt đối không tự đối chiếu dù ảnh tem rõ 94%, hỏi đúng 1 câu xin mã vận đơn; (2) ngay khi người mua gửi mã đơn `#SPX98234120`, hệ thống nối tới Snapshot 12/11, phát hiện mô tả bị sửa và khoá `tu_choi_khieu_nai`, chuyển thẳng Chuyên viên sàn. |
+| *"Vì sao nhóm chọn cách hiện độ tin cậy và bảng 2 cột có ngày như trên prototype thay vì cách khác?"* | Nếu chỉ hiện con số `96%` đơn thuần ở K7, người dùng sẽ tưởng là phán quyết cuối cùng; do đó phải đi kèm ngưỡng `92%` và câu giới hạn *"chỉ đọc mô tả và ảnh 2D"*. Với bảng đối chiếu `(1)`, nếu chỉ hiện 2 cột không có mốc ngày thì không phân biệt được bản sửa đổi `13/11` với bản lúc đặt `12/11` (nguồn cơn gây lỗi K2). |
